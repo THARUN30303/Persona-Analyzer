@@ -1,6 +1,6 @@
 /* ============================================================
    PERSONALITY INSIGHT — SCRIPT
-   Pure vanilla TypeScript/JavaScript logic
+   10 personality types · 12 questions
    ============================================================ */
 
 /* ---------- TYPE DEFINITIONS ---------- */
@@ -19,7 +19,17 @@ interface Question {
   sliderMap?: (value: number) => Record<string, number>;
 }
 
-type PersonalityType = 'leader' | 'creative' | 'calm' | 'social' | 'logical';
+type PersonalityType =
+  | 'leader'
+  | 'creative'
+  | 'calm'
+  | 'social'
+  | 'logical'
+  | 'empath'
+  | 'adventurer'
+  | 'perfectionist'
+  | 'visionary'
+  | 'nurturer';
 
 interface PersonalityResult {
   icon: string;
@@ -33,301 +43,523 @@ interface PersonalityResult {
   quoteAuthor: string;
 }
 
-/* ---------- QUESTIONS ARRAY ---------- */
+/* ============================================================
+   QUESTIONS (12 total — mix of choice & slider)
+   Each answer carries scores for one or more personality types.
+   The type with the highest cumulative score wins.
+   ============================================================ */
 
 const questions: Question[] = [
+
+  /* Q1 — Social energy */
   {
     type: 'choice',
-    text: 'Do you enjoy social gatherings and meeting new people?',
+    text: 'A friend invites you to a large party where you barely know anyone. How do you feel?',
     options: [
-      { text: 'Yes, I love them — the more people the better!', scores: { social: 3, leader: 1 } },
-      { text: 'I enjoy them, but I need recovery time afterwards.', scores: { calm: 2, creative: 1 } },
-      { text: 'I prefer small, meaningful conversations.', scores: { logical: 2, calm: 1 } },
-      { text: 'Not really — I find them draining.', scores: { calm: 3, logical: 1 } },
+      { text: 'Excited — new people, new stories!',          scores: { social: 3, adventurer: 1 } },
+      { text: 'Happy to go, but I\'ll stick close to my friend.', scores: { nurturer: 2, calm: 1 } },
+      { text: 'I\'ll observe quietly before joining in.',    scores: { calm: 2, logical: 1 } },
+      { text: 'Uncomfortable — I\'d rather skip it.',        scores: { perfectionist: 1, logical: 1, empath: 1 } },
+      { text: 'I go to make sure everyone feels included.',  scores: { empath: 3, nurturer: 1 } },
     ],
   },
+
+  /* Q2 — Decision style slider */
   {
     type: 'slider',
-    text: 'When making decisions, where do you lean?',
-    leftLabel: '❤️ Pure Emotion',
-    rightLabel: '🔬 Pure Logic',
+    text: 'When facing an important decision, where does your process sit?',
+    leftLabel: '❤️ Pure Gut Feeling',
+    rightLabel: '📊 Pure Data & Facts',
     sliderMap: (v) => {
-      if (v < 25)  return { social: 2, creative: 2 };
-      if (v < 50)  return { creative: 2, social: 1 };
-      if (v < 75)  return { logical: 2, calm: 1 };
-      return            { logical: 3 };
+      if (v < 20) return { empath: 3, nurturer: 1 };
+      if (v < 40) return { social: 2, creative: 2 };
+      if (v < 60) return { calm: 2, visionary: 1 };
+      if (v < 80) return { logical: 2, perfectionist: 1 };
+      return           { logical: 3, perfectionist: 1 };
     },
   },
+
+  /* Q3 — Planning style */
   {
     type: 'choice',
-    text: 'How do you approach planning and organisation?',
+    text: 'How do you typically approach a new project or goal?',
     options: [
-      { text: 'Detailed plans — I map everything out.', scores: { leader: 3, logical: 2 } },
-      { text: 'I plan loosely and adapt as I go.', scores: { leader: 1, creative: 2 } },
-      { text: 'I prefer to stay spontaneous.', scores: { social: 2, creative: 2 } },
-      { text: 'I avoid rigid plans — they stress me out.', scores: { calm: 2, creative: 1 } },
+      { text: 'I map out every detail before I begin.',         scores: { perfectionist: 3, logical: 1 } },
+      { text: 'I set a bold vision and figure out the steps.',  scores: { visionary: 3, leader: 1 } },
+      { text: 'I dive straight in and adapt on the fly.',       scores: { adventurer: 3, creative: 1 } },
+      { text: 'I research thoroughly, then plan carefully.',    scores: { logical: 2, perfectionist: 1 } },
+      { text: 'I discuss it with others to build excitement.',  scores: { social: 2, nurturer: 1 } },
     ],
   },
-  {
-    type: 'choice',
-    text: 'How do you respond to creative challenges?',
-    options: [
-      { text: 'I thrive — creativity is my natural element.', scores: { creative: 3 } },
-      { text: 'I enjoy it and can come up with unique ideas.', scores: { creative: 2, social: 1 } },
-      { text: 'I can do it, but I prefer structured problems.', scores: { logical: 2, leader: 1 } },
-      { text: 'I tend to stick to proven methods.', scores: { logical: 2, calm: 1 } },
-    ],
-  },
+
+  /* Q4 — Risk appetite slider */
   {
     type: 'slider',
-    text: 'Under pressure, how do you typically react?',
-    leftLabel: '🌊 Stay Calm',
-    rightLabel: '🔥 Take Action',
+    text: 'How comfortable are you with uncertainty and risk?',
+    leftLabel: '🛡️ I avoid risk',
+    rightLabel: '🎲 I embrace it',
     sliderMap: (v) => {
-      if (v < 25)  return { calm: 3 };
-      if (v < 50)  return { calm: 2, logical: 1 };
-      if (v < 75)  return { leader: 2, social: 1 };
-      return            { leader: 3 };
+      if (v < 20) return { perfectionist: 2, logical: 2 };
+      if (v < 40) return { calm: 2, logical: 1 };
+      if (v < 60) return { visionary: 2, leader: 1 };
+      if (v < 80) return { adventurer: 2, creative: 2 };
+      return           { adventurer: 3, leader: 1 };
     },
   },
+
+  /* Q5 — Group role */
   {
     type: 'choice',
-    text: 'When working in a group, what role do you naturally take?',
+    text: 'In a group working on a shared challenge, what role do you naturally fall into?',
     options: [
-      { text: 'The leader — I direct and motivate the team.', scores: { leader: 3 } },
-      { text: 'The idea generator — I bring creative solutions.', scores: { creative: 3 } },
-      { text: 'The connector — I keep everyone collaborating.', scores: { social: 3 } },
-      { text: 'The analyst — I check details and catch errors.', scores: { logical: 3 } },
-      { text: 'The mediator — I calm tension and find balance.', scores: { calm: 3 } },
+      { text: 'The commander — I take charge and set direction.',     scores: { leader: 3 } },
+      { text: 'The dreamer — I generate bold, unconventional ideas.', scores: { visionary: 2, creative: 2 } },
+      { text: 'The connector — I keep people energised and united.',  scores: { social: 3 } },
+      { text: 'The analyst — I dig into data and find flaws.',        scores: { logical: 2, perfectionist: 1 } },
+      { text: 'The heart — I sense feelings and keep morale high.',   scores: { empath: 2, nurturer: 2 } },
+      { text: 'The doer — I just want to get things moving.',         scores: { adventurer: 2, leader: 1 } },
     ],
   },
+
+  /* Q6 — Empathy & feelings */
   {
     type: 'choice',
-    text: 'Which of these best describes how you learn?',
+    text: 'When someone close to you is struggling, what is your first instinct?',
     options: [
-      { text: 'By doing and experimenting hands-on.', scores: { creative: 2, leader: 1 } },
-      { text: "Through discussion and others's perspectives.", scores: { social: 3 } },
-      { text: 'By reading, researching, and deep analysis.', scores: { logical: 3 } },
-      { text: 'Through quiet reflection and my own pace.', scores: { calm: 3 } },
+      { text: 'I feel their pain almost as if it were my own.',         scores: { empath: 3 } },
+      { text: 'I immediately want to fix or solve their problem.',      scores: { leader: 2, logical: 1 } },
+      { text: 'I sit with them and offer a safe space to talk.',        scores: { nurturer: 3 } },
+      { text: 'I suggest activities or adventures to lift their mood.', scores: { adventurer: 2, social: 1 } },
+      { text: 'I listen calmly and help them think it through.',        scores: { calm: 2, logical: 1 } },
     ],
   },
+
+  /* Q7 — Creativity vs structure */
+  {
+    type: 'choice',
+    text: 'Which environment helps you do your best work?',
+    options: [
+      { text: 'Total freedom — no rules, just imagination.',    scores: { creative: 3, adventurer: 1 } },
+      { text: 'Clear structure with room for creative input.',  scores: { perfectionist: 2, leader: 1 } },
+      { text: 'Quiet solitude where I can think deeply.',       scores: { calm: 2, logical: 1 } },
+      { text: 'Lively collaboration with energetic people.',    scores: { social: 2, empath: 1 } },
+      { text: 'A big-picture vision to chase without limits.',  scores: { visionary: 3 } },
+    ],
+  },
+
+  /* Q8 — Reaction to mistakes */
+  {
+    type: 'choice',
+    text: 'You make a significant mistake at work or school. How do you respond?',
+    options: [
+      { text: 'I analyse it obsessively to make sure it never happens again.',   scores: { perfectionist: 3 } },
+      { text: 'I own it, apologise, and focus on fixing the damage.',            scores: { leader: 2, nurturer: 1 } },
+      { text: 'I feel bad, but I process it quietly and move on.',               scores: { calm: 2, empath: 1 } },
+      { text: 'I see it as useful data — mistakes are how we learn.',            scores: { logical: 2, adventurer: 1 } },
+      { text: 'I try to reframe it as part of a bigger growth story.',           scores: { visionary: 2, creative: 1 } },
+    ],
+  },
+
+  /* Q9 — Future orientation slider */
   {
     type: 'slider',
-    text: 'How much do external opinions influence your choices?',
-    leftLabel: '🙅 I ignore them',
-    rightLabel: '🫂 Highly important',
+    text: 'When you think about the future, where does your mind go?',
+    leftLabel: '🕰️ I live in the present',
+    rightLabel: '🚀 I dream of what\'s possible',
     sliderMap: (v) => {
-      if (v < 25)  return { logical: 2, calm: 1 };
-      if (v < 50)  return { leader: 2, logical: 1 };
-      if (v < 75)  return { social: 2, creative: 1 };
-      return            { social: 3 };
+      if (v < 20) return { calm: 3 };
+      if (v < 40) return { social: 2, nurturer: 1 };
+      if (v < 60) return { leader: 2, logical: 1 };
+      if (v < 80) return { creative: 2, visionary: 1 };
+      return           { visionary: 3 };
     },
   },
+
+  /* Q10 — Self-care style */
   {
     type: 'choice',
-    text: 'How do you handle long-term goals?',
+    text: 'After an exhausting week, how do you recharge?',
     options: [
-      { text: 'I set bold ambitious goals and chase them relentlessly.', scores: { leader: 3 } },
-      { text: 'I have flexible goals that evolve as I grow.', scores: { creative: 2, social: 1 } },
-      { text: 'I take each day as it comes — goals feel restrictive.', scores: { calm: 2, social: 1 } },
-      { text: 'I build measurable milestones and track progress.', scores: { logical: 3 } },
+      { text: 'An outdoor adventure or something physically thrilling.', scores: { adventurer: 3 } },
+      { text: 'Spending quality time with people I love.',                scores: { social: 2, nurturer: 1 } },
+      { text: 'Alone time — reading, music, or creative projects.',       scores: { calm: 2, creative: 1 } },
+      { text: 'Diving into a complex problem or learning something new.', scores: { logical: 2, visionary: 1 } },
+      { text: 'Helping or caring for someone else — it fills me up.',     scores: { nurturer: 3, empath: 1 } },
+      { text: 'Reviewing my goals and planning my next steps.',           scores: { perfectionist: 2, leader: 1 } },
     ],
   },
+
+  /* Q11 — Values */
   {
     type: 'choice',
-    text: 'Which statement resonates with you most?',
+    text: 'Which value matters most to you in how you live your life?',
     options: [
-      { text: '"I inspire others to reach for their potential."', scores: { leader: 3, social: 1 } },
-      { text: '"I see the world differently and create new things."', scores: { creative: 3 } },
-      { text: '"I find peace in stillness and inner balance."', scores: { calm: 3 } },
-      { text: '"I connect deeply with people everywhere I go."', scores: { social: 3 } },
-      { text: '"I trust logic, data, and careful thinking."', scores: { logical: 3 } },
+      { text: 'Excellence — I always aim to do my best work.',      scores: { perfectionist: 3 } },
+      { text: 'Freedom — I need space to explore and take risks.',   scores: { adventurer: 3 } },
+      { text: 'Connection — relationships are everything.',          scores: { social: 2, empath: 1 } },
+      { text: 'Truth — honesty, logic, and evidence always win.',    scores: { logical: 3 } },
+      { text: 'Impact — I want to leave the world better.',         scores: { visionary: 2, nurturer: 1 } },
+      { text: 'Harmony — peace and balance in everything.',          scores: { calm: 3 } },
+    ],
+  },
+
+  /* Q12 — Final resonance */
+  {
+    type: 'choice',
+    text: 'Which of these sentences feels most like something you would say?',
+    options: [
+      { text: '"I am here to lead people toward something great."',          scores: { leader: 3 } },
+      { text: '"I see possibilities that others can\'t imagine yet."',       scores: { visionary: 3 } },
+      { text: '"I understand how people feel, even when they say nothing."', scores: { empath: 3 } },
+      { text: '"I want to protect and uplift everyone around me."',          scores: { nurturer: 3 } },
+      { text: '"I need to push boundaries and discover what\'s next."',      scores: { adventurer: 3 } },
+      { text: '"I won\'t rest until this is done perfectly."',               scores: { perfectionist: 3 } },
+      { text: '"I create things the world hasn\'t seen before."',            scores: { creative: 3 } },
+      { text: '"I find clarity where others find chaos."',                   scores: { logical: 3 } },
+      { text: '"I bring people together and make them feel valued."',        scores: { social: 3 } },
+      { text: '"I find peace in stillness and depth in silence."',           scores: { calm: 3 } },
     ],
   },
 ];
 
-/* ---------- PERSONALITY RESULTS DATABASE ---------- */
+/* ============================================================
+   PERSONALITY RESULTS — 10 types
+   ============================================================ */
 
 const personalityResults: Record<PersonalityType, PersonalityResult> = {
+
   leader: {
     icon: '🏆',
     title: 'The Leader',
     description:
-      'You have a magnetic ability to inspire others and take charge when it matters most. People naturally look to you for direction, and you rarely shy away from responsibility. You see the big picture while staying action-oriented.',
+      'You have a magnetic ability to inspire others and step up when it matters most. People look to you for direction instinctively, and you thrive on turning vision into action. You carry responsibility not as a burden, but as a privilege.',
     color: '#f59e0b',
     positiveTraits: [
-      'Natural motivator and team builder',
-      'Decisive under pressure',
-      'Visionary thinking with practical drive',
-      'High emotional intelligence with groups',
-      'Accountable and reliable',
+      'Natural at motivating and uniting people',
+      'Decisive and composed under pressure',
+      'Big-picture thinker with actionable drive',
+      'Accountable — you own outcomes fully',
+      'Confident communicator others trust',
     ],
     cautionAreas: [
-      'Can become controlling or overbearing',
-      'May struggle to delegate or trust others',
-      'Risk of burnout from carrying too much',
-      'Impatience with slower-paced people',
+      'Can slide into controlling behaviour',
+      'Struggles to delegate or let go',
+      'Prone to burnout from over-responsibility',
+      'Impatience with slower-paced collaborators',
     ],
     improvementTips: [
-      'Practice active listening — let others lead sometimes',
-      'Build regular rest and recovery into your schedule',
-      'Celebrate the wins of those around you',
-      'Explore vulnerability — it builds deeper trust',
+      'Practise active listening — sometimes the best leadership is silence',
+      'Build genuine rest into your schedule; rest is strategy',
+      'Celebrate others\' wins loudly and your own quietly',
+      'Let vulnerability into your leadership — it builds real trust',
     ],
-    quote: 'The greatest leader is not necessarily the one who does the greatest things, but the one who gets people to do the greatest things.',
+    quote: 'The greatest leader is not the one who does the greatest things, but the one who gets people to do the greatest things.',
     quoteAuthor: '— Ronald Reagan',
   },
+
   creative: {
     icon: '🎨',
     title: 'The Creative Thinker',
     description:
-      'Your mind is a kaleidoscope of ideas. You see connections others miss, think outside every box, and bring an original perspective to every problem. You thrive in environments that reward imagination and exploration.',
+      'Your mind is a kaleidoscope of ideas. You see connections others miss, think outside every box, and approach life as an art form. You bring originality to whatever you touch and thrive in environments that reward imagination.',
     color: '#ec4899',
     positiveTraits: [
-      'Wildly imaginative and original',
-      'Adaptable and open to change',
-      'Sees problems from unexpected angles',
+      'Wildly imaginative and truly original',
+      'Adaptable — you welcome change and chaos',
+      'Sees problems from angles no one else considered',
       'Deep aesthetic and conceptual sensitivity',
-      'Enthusiastic and contagiously curious',
+      'Contagiously curious and enthusiastic',
     ],
     cautionAreas: [
-      'May struggle to follow through on projects',
-      'Gets bored with routine quickly',
-      'Can be scattered or unfocused',
-      'Overthinks and second-guesses ideas',
+      'May struggle to finish what you start',
+      'Routine drains you fast',
+      'Can be scattered across too many ideas at once',
+      'Tends to overthink and second-guess creative choices',
     ],
     improvementTips: [
-      'Use a single trusted system to track your ideas',
-      'Pair up with detail-oriented partners',
-      'Commit to finishing one creative project before starting another',
-      'Build structure into your day — even creative work needs rhythm',
+      'Use one trusted system to capture and organise your ideas',
+      'Partner with detail-oriented people to bring ideas to life',
+      'Commit to finishing one project before launching the next',
+      'Routine doesn\'t kill creativity — it gives it a launchpad',
     ],
     quote: 'Creativity is intelligence having fun.',
     quoteAuthor: '— Albert Einstein',
   },
+
   calm: {
     icon: '🧘',
     title: 'The Calm Observer',
     description:
-      'You carry a quiet, steadying presence that others are drawn to. You observe deeply, process fully, and speak with intention. In a noisy world, your stillness is a superpower — it gives you clarity that reactive minds miss.',
+      'You carry a quiet, grounding presence that others are instinctively drawn to. You observe before you act, listen before you speak, and process deeply before you decide. In a restless world, your stillness is a rare and powerful gift.',
     color: '#34d399',
     positiveTraits: [
-      'Unshakeable composure under pressure',
-      'Patient and thoughtful listener',
-      'Deep thinker with rich inner world',
+      'Unshakeable composure in stressful situations',
+      'A patient, thoughtful, and generous listener',
+      'Rich inner world with deep insight',
       'Empathetic without being overwhelmed',
-      'Consistent and trustworthy',
+      'Reliable, consistent, and deeply trustworthy',
     ],
     cautionAreas: [
-      'Can appear detached or uninterested',
-      'Avoids necessary confrontations',
-      'May suppress emotions for too long',
-      'Prone to overthinking in silence',
+      'May appear distant or disengaged',
+      'Avoids necessary conflict for too long',
+      'Internalises emotions silently until they overflow',
+      'Prone to extended overthinking in solitude',
     ],
     improvementTips: [
-      'Express your thoughts and feelings more proactively',
-      'Schedule regular social connection — even brief check-ins help',
-      'Practise assertiveness — your voice matters',
-      'Journal to process your rich inner life',
+      'Share your thoughts more proactively — your voice has real weight',
+      'Schedule regular connection; even brief check-ins recharge others around you',
+      'Practise assertiveness: your comfort isn\'t worth sacrificing your needs',
+      'Keep a journal to surface and process your rich inner world',
     ],
-    quote: 'In the midst of chaos, there is also opportunity. The mind is everything; what you think, you become.',
+    quote: 'The mind is everything. What you think, you become.',
     quoteAuthor: '— Buddha',
   },
+
   social: {
     icon: '🌍',
     title: 'The Social Explorer',
     description:
-      'You are energised by people, places, and experiences. Your warmth and curiosity make strangers feel like old friends, and you thrive in environments filled with variety and human connection. Life is an adventure — and you bring everyone along.',
+      'You are energised by people, places, and shared experiences. Your natural warmth makes strangers feel like old friends, and you thrive wherever there is variety, laughter, and human connection. Life is an adventure — and you bring everyone along for the ride.',
     color: '#fb923c',
     positiveTraits: [
-      'Charismatic and naturally likeable',
+      'Charismatic and naturally magnetic',
       'Excellent communicator and storyteller',
-      'Brings energy and enthusiasm to groups',
-      'Highly empathetic and tuned in to others',
-      'Adapts easily to new environments',
+      'Infectious energy that lifts any room',
+      'Highly attuned to the people around you',
+      'Adapts easily to new people and places',
     ],
     cautionAreas: [
-      'May neglect deep solitary reflection',
-      'Can overpromise in the moment',
-      'Seeking approval can undermine decisions',
-      'Risk of burnout from over-extension',
+      'Deep solitary reflection gets neglected',
+      'Can over-promise in the excitement of the moment',
+      'Approval-seeking can cloud personal decisions',
+      'Risk of spreading yourself too thin',
     ],
     improvementTips: [
-      'Schedule quiet solo time to recharge and reflect',
-      'Develop a core set of personal values to anchor your choices',
-      'Practise saying no — your time is your most valuable resource',
-      'Cultivate depth in a few close relationships, not just breadth',
+      'Schedule quiet solo time — reflection adds depth to your warmth',
+      'Build a personal value system to anchor decisions when excitement fades',
+      'Practise saying no — your time and energy are precious',
+      'Cultivate a few deeply meaningful relationships alongside the broad ones',
     ],
-    quote: 'You can make more friends in two months by becoming interested in other people than in two years by trying to get people interested in you.',
+    quote: 'You can make more friends in two months by being genuinely interested in others than in two years trying to make them interested in you.',
     quoteAuthor: '— Dale Carnegie',
   },
+
   logical: {
     icon: '🔬',
     title: 'The Logical Analyzer',
     description:
-      'You approach the world with precision, curiosity, and a deep respect for evidence and systems. You find beauty in structure, truth in data, and satisfaction in solving complex problems that confound others.',
+      'You see the world through a lens of patterns, evidence, and precision. Where others see confusion, you see systems waiting to be understood. Your greatest satisfaction comes from solving complex problems with elegant, reasoned solutions.',
     color: '#60a5fa',
     positiveTraits: [
-      'Sharp critical thinker',
-      'Highly accurate and detail-oriented',
-      'Objective and impartial in analysis',
-      'Excellent problem-solver and strategist',
-      'Values truth and intellectual honesty',
+      'Sharp, disciplined critical thinker',
+      'Precise and detail-oriented in everything you do',
+      'Objective — you follow the evidence, not the crowd',
+      'An excellent strategist and problem-solver',
+      'Intellectually honest and trustworthy with information',
     ],
     cautionAreas: [
-      'Can appear cold or dismissive of emotions',
-      'Prone to analysis paralysis',
-      'May underestimate intuitive insight',
-      'Struggles with ambiguity and uncertainty',
+      'Can seem cold or dismissive of emotional concerns',
+      'Analysis paralysis — seeking perfect data before acting',
+      'May undervalue intuition and gut feeling',
+      'Ambiguity and uncertainty are genuinely unsettling',
     ],
     improvementTips: [
-      "Practise emotional curiosity — ask \"how does this feel?\" as well as \"what does this mean?\"",
-      "Set a decision deadline — perfect analysis doesn't exist",
-      'Embrace calculated risk — not all value is measurable',
-      'Share your thinking process — others learn from your mind',
+      'Ask "how does this feel?" as often as "what does this mean?"',
+      'Set hard decision deadlines — perfect information never arrives',
+      'Practise calculated risk-taking; not all value is measurable',
+      'Share your reasoning openly — others grow from watching your mind work',
     ],
     quote: 'Logic will get you from A to B. Imagination will take you everywhere.',
     quoteAuthor: '— Albert Einstein',
   },
+
+  empath: {
+    icon: '🫀',
+    title: 'The Empath',
+    description:
+      'You feel the world deeply — sometimes other people\'s emotions more vividly than your own. You can read a room the moment you enter it, and people are drawn to your warmth because they feel genuinely understood in your presence. You don\'t just listen — you truly hear.',
+    color: '#f472b6',
+    positiveTraits: [
+      'Deeply attuned to the emotions of others',
+      'Creates profound psychological safety for people',
+      'Excellent listener who genuinely makes people feel seen',
+      'Compassionate, non-judgemental, and open-hearted',
+      'Brings humanity and care into every space you enter',
+    ],
+    cautionAreas: [
+      'Absorbs others\' stress and pain too deeply',
+      'May neglect your own needs while caring for everyone else',
+      'Boundaries can be hard to enforce when someone is suffering',
+      'Susceptible to emotional exhaustion and burnout',
+    ],
+    improvementTips: [
+      'Establish clear emotional boundaries — you cannot pour from an empty cup',
+      'Schedule regular time that is fully and unapologetically yours',
+      'Learn to distinguish between empathising and absorbing others\' pain',
+      'Seek out spaces and people that replenish rather than drain you',
+    ],
+    quote: 'Empathy is seeing with the eyes of another, listening with the ears of another, and feeling with the heart of another.',
+    quoteAuthor: '— Alfred Adler',
+  },
+
+  adventurer: {
+    icon: '🌄',
+    title: 'The Adventurer',
+    description:
+      'You were made for the edge of the map. Routine is your kryptonite and novelty is your fuel. You take on risks others walk away from, embrace the unknown with open arms, and collect experiences with the same hunger others collect security. Life, to you, is meant to be lived — not managed.',
+    color: '#f97316',
+    positiveTraits: [
+      'Fearless in the face of the unknown',
+      'Endlessly curious and open to new experiences',
+      'Brings spontaneity and excitement to others around you',
+      'Resilient — setbacks just become better stories',
+      'Highly adaptable; you figure it out as you go',
+    ],
+    cautionAreas: [
+      'Long-term planning and commitment can feel restrictive',
+      'Impulsive decisions sometimes lead to avoidable mistakes',
+      'May struggle with stability and consistent routines',
+      'Can burn bridges in the rush to move to the next thing',
+    ],
+    improvementTips: [
+      'Channel your boldness into one meaningful long-term pursuit',
+      'Pause before major decisions — brief reflection prevents costly detours',
+      'Build at least one anchor routine that grounds you daily',
+      'The biggest adventure of all is deep, lasting commitment — try it',
+    ],
+    quote: 'Life is either a daring adventure or nothing at all.',
+    quoteAuthor: '— Helen Keller',
+  },
+
+  perfectionist: {
+    icon: '🎯',
+    title: 'The Perfectionist',
+    description:
+      'You hold yourself — and the things you care about — to an extraordinary standard. Details others overlook are glaring to you, and you find genuine satisfaction in work done with precision and care. You don\'t just want to complete things; you want to complete them right.',
+    color: '#a78bfa',
+    positiveTraits: [
+      'Relentlessly high standards across everything you do',
+      'Exceptional attention to detail and quality',
+      'Thorough, reliable, and consistently delivers excellence',
+      'Self-motivated — external pressure is rarely needed',
+      'Others trust your work completely, because you check it twice',
+    ],
+    cautionAreas: [
+      'Paralysed by the fear of imperfection',
+      'Procrastinates when "good enough" feels like failure',
+      'Overly self-critical after inevitable mistakes',
+      'Can impose high standards on others, creating friction',
+    ],
+    improvementTips: [
+      'Reframe "done and good" as a genuine achievement — it often is',
+      'Set a clear "good enough" threshold before starting, not after',
+      'Practise self-compassion the same way you\'d comfort a friend who failed',
+      'Reserve your perfectionism for the things that truly matter — let the rest go',
+    ],
+    quote: 'Have no fear of perfection — you\'ll never reach it. And that\'s perfectly fine.',
+    quoteAuthor: '— Salvador Dalí (adapted)',
+  },
+
+  visionary: {
+    icon: '🔭',
+    title: 'The Visionary',
+    description:
+      'Your mind lives five steps ahead. You see the future with unusual clarity — not as a prediction, but as a destination worth building toward. You are energised by possibility, bored by the status quo, and at your best when you are pointing others toward something bigger than what already exists.',
+    color: '#818cf8',
+    positiveTraits: [
+      'Sees opportunities long before others do',
+      'Inspires others with bold, compelling ideas',
+      'Thinks systemically — connects distant dots into clear pictures',
+      'Unafraid to challenge what is for the sake of what could be',
+      'Natural innovator with a long-range perspective',
+    ],
+    cautionAreas: [
+      'Gets frustrated by the slow pace of execution',
+      'May skip important details in pursuit of the big idea',
+      'Can seem detached or impractical to those who think short-term',
+      'Starting is easy; sustained follow-through is the real challenge',
+    ],
+    improvementTips: [
+      'Pair with strong executors who love the details you find tedious',
+      'Break your vision into 90-day milestones to make it tangible',
+      'Listen to operational pushback — pragmatism sharpens great ideas',
+      'Communicate your vision in terms of others\' benefits, not just your excitement',
+    ],
+    quote: 'The best way to predict the future is to create it.',
+    quoteAuthor: '— Peter Drucker',
+  },
+
+  nurturer: {
+    icon: '🌱',
+    title: 'The Nurturer',
+    description:
+      'You are the quiet backbone of every relationship and community you are part of. Your greatest joy comes not from personal achievement, but from watching the people you care about grow, succeed, and thrive — often because of the invisible support you provided along the way.',
+    color: '#4ade80',
+    positiveTraits: [
+      'Deeply caring, warm, and unconditionally supportive',
+      'Creates safety and belonging wherever you go',
+      'Patient and consistent through others\' long seasons of struggle',
+      'Remembers the details — birthdays, worries, small victories',
+      'Brings out the best in people through quiet encouragement',
+    ],
+    cautionAreas: [
+      'Puts others\' needs so far above your own that you disappear',
+      'Saying "no" feels like personal failure or betrayal',
+      'Can attract people who take without giving back',
+      'Neglects your own dreams while championing everyone else\'s',
+    ],
+    improvementTips: [
+      'Your needs are not less important — act like it',
+      'Learn to identify people who reciprocate care, and invest there first',
+      'Practise asking for help — it models healthy interdependence',
+      'Set aside regular time to pursue something that is purely for you',
+    ],
+    quote: 'To the world you may be one person, but to one person you may be the world.',
+    quoteAuthor: '— Dr. Seuss',
+  },
 };
 
-/* ---------- STATE ---------- */
+/* ============================================================
+   STATE
+   ============================================================ */
 
 let currentIndex = 0;
 const answers: Array<number | null> = new Array(questions.length).fill(null);
-
-// Track any pending auto-advance timer so we can cancel it if needed
 let autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
 
-/* ---------- DOM REFERENCES ---------- */
+/* ============================================================
+   DOM REFERENCES
+   ============================================================ */
 
-const startBtn        = document.getElementById('start-btn') as HTMLButtonElement;
-const prevBtn         = document.getElementById('prev-btn') as HTMLButtonElement;
-const nextBtn         = document.getElementById('next-btn') as HTMLButtonElement;
-const restartBtn      = document.getElementById('restart-btn') as HTMLButtonElement;
-const exitQuizBtn     = document.getElementById('exit-quiz-btn') as HTMLButtonElement;
+const startBtn         = document.getElementById('start-btn')        as HTMLButtonElement;
+const prevBtn          = document.getElementById('prev-btn')         as HTMLButtonElement;
+const nextBtn          = document.getElementById('next-btn')         as HTMLButtonElement;
+const restartBtn       = document.getElementById('restart-btn')      as HTMLButtonElement;
+const exitQuizBtn      = document.getElementById('exit-quiz-btn')    as HTMLButtonElement;
 
-const welcomeScreen   = document.getElementById('welcome-screen') as HTMLElement;
-const quizScreen      = document.getElementById('quiz-screen') as HTMLElement;
-const resultsScreen   = document.getElementById('results-screen') as HTMLElement;
+const welcomeScreen    = document.getElementById('welcome-screen')   as HTMLElement;
+const quizScreen       = document.getElementById('quiz-screen')      as HTMLElement;
+const resultsScreen    = document.getElementById('results-screen')   as HTMLElement;
 
-const currentQEl      = document.getElementById('current-q') as HTMLElement;
-const totalQEl        = document.getElementById('total-q') as HTMLElement;
-const progressPct     = document.getElementById('progress-pct') as HTMLElement;
-const progressFill    = document.getElementById('progress-fill') as HTMLElement;
-const progressDots    = document.getElementById('progress-dots') as HTMLElement;
+const currentQEl       = document.getElementById('current-q')        as HTMLElement;
+const totalQEl         = document.getElementById('total-q')          as HTMLElement;
+const progressPct      = document.getElementById('progress-pct')     as HTMLElement;
+const progressFill     = document.getElementById('progress-fill')    as HTMLElement;
+const progressDots     = document.getElementById('progress-dots')    as HTMLElement;
 
-const questionCard    = document.getElementById('question-card') as HTMLElement;
-const questionNumber  = document.getElementById('question-number') as HTMLElement;
-const questionText    = document.getElementById('question-text') as HTMLElement;
-const answersGrid     = document.getElementById('answers-grid') as HTMLElement;
-const sliderContainer = document.getElementById('slider-container') as HTMLElement;
-const sliderInput     = document.getElementById('slider-input') as HTMLInputElement;
-const sliderLabelLeft = document.getElementById('slider-label-left') as HTMLElement;
-const sliderLabelRight= document.getElementById('slider-label-right') as HTMLElement;
-const sliderValueText = document.getElementById('slider-value-text') as HTMLElement;
+const questionCard     = document.getElementById('question-card')    as HTMLElement;
+const questionNumber   = document.getElementById('question-number')  as HTMLElement;
+const questionText     = document.getElementById('question-text')    as HTMLElement;
+const answersGrid      = document.getElementById('answers-grid')     as HTMLElement;
+const sliderContainer  = document.getElementById('slider-container') as HTMLElement;
+const sliderInput      = document.getElementById('slider-input')     as HTMLInputElement;
+const sliderLabelLeft  = document.getElementById('slider-label-left')  as HTMLElement;
+const sliderLabelRight = document.getElementById('slider-label-right') as HTMLElement;
+const sliderValueText  = document.getElementById('slider-value-text')  as HTMLElement;
 
-/* ---------- HELPERS ---------- */
+/* ============================================================
+   HELPERS
+   ============================================================ */
 
 function showScreen(screen: HTMLElement) {
   [welcomeScreen, quizScreen, resultsScreen].forEach(s => {
@@ -340,7 +572,7 @@ function showScreen(screen: HTMLElement) {
 
 function buildProgressDots() {
   progressDots.innerHTML = '';
-  questions.forEach((_, i) => {
+  questions.forEach(() => {
     const dot = document.createElement('div');
     dot.className = 'progress-dot';
     progressDots.appendChild(dot);
@@ -362,7 +594,7 @@ function updateProgress(idx: number) {
   });
 }
 
-const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
 function sliderLabel(value: number): string {
   if (value < 15) return 'Strongly Left';
@@ -372,11 +604,17 @@ function sliderLabel(value: number): string {
   return 'Strongly Right';
 }
 
-/* ---------- ADVANCE / NAVIGATE ---------- */
+function updateSliderFill(value: number) {
+  const pct = value + '%';
+  sliderInput.style.background =
+    `linear-gradient(to right, var(--accent-1) 0%, var(--accent-2) ${pct}, var(--bg-surface) ${pct}, var(--bg-surface) 100%)`;
+}
 
-/** Cancel any pending auto-advance and move to a specific question index */
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+
 function goToQuestion(idx: number) {
-  // Cancel any pending auto-advance to prevent double-advancing
   if (autoAdvanceTimer !== null) {
     clearTimeout(autoAdvanceTimer);
     autoAdvanceTimer = null;
@@ -385,7 +623,6 @@ function goToQuestion(idx: number) {
   renderQuestion(idx);
 }
 
-/** Move forward one question (or show results if on the last) */
 function advance() {
   if (currentIndex < questions.length - 1) {
     goToQuestion(currentIndex + 1);
@@ -394,54 +631,47 @@ function advance() {
   }
 }
 
-/* ---------- RENDER QUESTION ---------- */
+/* ============================================================
+   RENDER QUESTION
+   ============================================================ */
 
 function renderQuestion(idx: number) {
   const q = questions[idx];
 
-  // Animate old card out, then swap content in
   questionCard.classList.remove('entering');
   questionCard.classList.add('leaving');
 
   setTimeout(() => {
     questionCard.classList.remove('leaving');
 
-    // ---- Populate header ----
+    /* Header */
     questionNumber.textContent = String(idx + 1).padStart(2, '0');
     questionText.textContent   = q.text;
 
-    // ---- Reset UI areas ----
-    answersGrid.innerHTML      = '';
-    answersGrid.style.display  = 'grid';
+    /* Reset layout */
+    answersGrid.innerHTML         = '';
+    answersGrid.style.display     = 'grid';
     sliderContainer.style.display = 'none';
 
     if (q.type === 'choice' && q.options) {
-      // ---- Multiple choice ----
+
+      /* ---- Multiple choice ---- */
       q.options.forEach((opt, i) => {
         const btn = document.createElement('button');
         btn.className = 'answer-btn';
         btn.innerHTML = `<span class="answer-letter">${LETTERS[i]}</span><span>${opt.text}</span>`;
-
-        // Restore previously selected answer
         if (answers[idx] === i) btn.classList.add('selected');
 
         btn.addEventListener('click', () => {
-          // Mark answer
           answers[idx] = i;
 
-          // Highlight selected button
           answersGrid.querySelectorAll('.answer-btn').forEach((b, bi) => {
             b.classList.toggle('selected', bi === i);
           });
 
-          // Mark dot as answered
           progressDots.querySelectorAll('.progress-dot')[idx]?.classList.add('answered');
-
-          // Enable next button immediately (user can also click it)
           nextBtn.disabled = false;
 
-          // Auto-advance after a short delay for better UX
-          // Store the timer reference so it can be cancelled if Next is clicked first
           if (autoAdvanceTimer !== null) clearTimeout(autoAdvanceTimer);
           autoAdvanceTimer = setTimeout(() => {
             autoAdvanceTimer = null;
@@ -452,28 +682,24 @@ function renderQuestion(idx: number) {
         answersGrid.appendChild(btn);
       });
 
-      // Next is disabled until a choice is made (unless already answered)
       nextBtn.disabled = answers[idx] === null;
 
     } else if (q.type === 'slider') {
-      // ---- Slider ----
-      answersGrid.style.display  = 'none';
+
+      /* ---- Slider ---- */
+      answersGrid.style.display     = 'none';
       sliderContainer.style.display = 'block';
 
       sliderLabelLeft.textContent  = q.leftLabel  ?? '';
       sliderLabelRight.textContent = q.rightLabel ?? '';
 
-      // Default value is 50 (centre) if not yet answered
-      const initValue = answers[idx] !== null ? (answers[idx] as number) : 50;
-      answers[idx] = initValue;          // persist default so score calc works
+      const initValue  = answers[idx] !== null ? (answers[idx] as number) : 50;
+      answers[idx]     = initValue;
 
       sliderInput.value           = String(initValue);
       sliderValueText.textContent = sliderLabel(initValue);
-
-      // Rebuild the gradient fill for the slider track
       updateSliderFill(initValue);
 
-      // Update value label and stored answer as user drags
       sliderInput.oninput = () => {
         const v = Number(sliderInput.value);
         answers[idx]                = v;
@@ -481,14 +707,11 @@ function renderQuestion(idx: number) {
         updateSliderFill(v);
       };
 
-      // Slider questions are always "answerable" — Next is enabled immediately
       nextBtn.disabled = false;
     }
 
-    // ---- Nav buttons ----
+    /* Nav */
     prevBtn.disabled = idx === 0;
-
-    // Update next button label
     nextBtn.innerHTML =
       idx === questions.length - 1
         ? `See Results <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`
@@ -496,7 +719,6 @@ function renderQuestion(idx: number) {
 
     updateProgress(idx);
 
-    // Animate new card in
     requestAnimationFrame(() => {
       questionCard.classList.add('entering');
       setTimeout(() => questionCard.classList.remove('entering'), 350);
@@ -505,17 +727,14 @@ function renderQuestion(idx: number) {
   }, 220);
 }
 
-/** Update the visual fill gradient on the range slider track */
-function updateSliderFill(value: number) {
-  const pct = value + '%';
-  sliderInput.style.background = `linear-gradient(to right, var(--accent-1) 0%, var(--accent-2) ${pct}, var(--bg-surface) ${pct}, var(--bg-surface) 100%)`;
-}
-
-/* ---------- CALCULATE RESULTS ---------- */
+/* ============================================================
+   CALCULATE RESULTS
+   ============================================================ */
 
 function calculateResults(): Record<PersonalityType, number> {
   const scores: Record<PersonalityType, number> = {
     leader: 0, creative: 0, calm: 0, social: 0, logical: 0,
+    empath: 0, adventurer: 0, perfectionist: 0, visionary: 0, nurturer: 0,
   };
 
   questions.forEach((q, idx) => {
@@ -540,7 +759,9 @@ function calculateResults(): Record<PersonalityType, number> {
   return scores;
 }
 
-/* ---------- SHOW RESULTS ---------- */
+/* ============================================================
+   SHOW RESULTS
+   ============================================================ */
 
 function showResults() {
   const scores = calculateResults();
@@ -548,28 +769,46 @@ function showResults() {
   const winner = (Object.entries(scores) as [PersonalityType, number][])
     .sort((a, b) => b[1] - a[1])[0][0];
 
-  const result = personalityResults[winner];
+  const result  = personalityResults[winner];
   const maxScore = Math.max(...Object.values(scores)) || 1;
 
-  // Hero
-  (document.getElementById('result-icon') as HTMLElement).textContent  = result.icon;
+  /* Hero */
+  (document.getElementById('result-icon')  as HTMLElement).textContent = result.icon;
   const titleEl = document.getElementById('result-title') as HTMLElement;
-  titleEl.textContent   = result.title;
-  titleEl.style.color   = result.color;
-  (document.getElementById('result-desc') as HTMLElement).textContent  = result.description;
+  titleEl.textContent  = result.title;
+  titleEl.style.color  = result.color;
+  (document.getElementById('result-desc')  as HTMLElement).textContent = result.description;
 
-  // Score bars
+  /* Score bars — show top 5 to avoid clutter */
   const scoreBars = document.getElementById('score-bars') as HTMLElement;
   scoreBars.innerHTML = '';
 
   const typeLabels: Record<PersonalityType, string> = {
-    leader: '🏆 Leader', creative: '🎨 Creative', calm: '🧘 Calm Observer',
-    social: '🌍 Social', logical: '🔬 Logical',
+    leader:       '🏆 Leader',
+    creative:     '🎨 Creative',
+    calm:         '🧘 Calm Observer',
+    social:       '🌍 Social',
+    logical:      '🔬 Logical',
+    empath:       '🫀 Empath',
+    adventurer:   '🌄 Adventurer',
+    perfectionist:'🎯 Perfectionist',
+    visionary:    '🔭 Visionary',
+    nurturer:     '🌱 Nurturer',
   };
   const typeColors: Record<PersonalityType, string> = {
-    leader: '#f59e0b', creative: '#ec4899', calm: '#34d399', social: '#fb923c', logical: '#60a5fa',
+    leader:       '#f59e0b',
+    creative:     '#ec4899',
+    calm:         '#34d399',
+    social:       '#fb923c',
+    logical:      '#60a5fa',
+    empath:       '#f472b6',
+    adventurer:   '#f97316',
+    perfectionist:'#a78bfa',
+    visionary:    '#818cf8',
+    nurturer:     '#4ade80',
   };
 
+  /* Show all 10 types sorted by score */
   (Object.entries(scores) as [PersonalityType, number][])
     .sort((a, b) => b[1] - a[1])
     .forEach(([type, score]) => {
@@ -586,7 +825,7 @@ function showResults() {
       scoreBars.appendChild(row);
     });
 
-  // Trait lists
+  /* Trait lists */
   (document.getElementById('positive-traits') as HTMLElement).innerHTML =
     result.positiveTraits.map(t => `<li>${t}</li>`).join('');
   (document.getElementById('caution-traits') as HTMLElement).innerHTML =
@@ -594,13 +833,13 @@ function showResults() {
   (document.getElementById('tips-list') as HTMLElement).innerHTML =
     result.improvementTips.map(t => `<li>${t}</li>`).join('');
 
-  // Quote
-  (document.getElementById('quote-text') as HTMLElement).textContent   = result.quote;
+  /* Quote */
+  (document.getElementById('quote-text')   as HTMLElement).textContent = result.quote;
   (document.getElementById('quote-author') as HTMLElement).textContent = result.quoteAuthor;
 
   showScreen(resultsScreen);
 
-  // Animate score bars after screen transition
+  /* Animate bars after screen transition */
   setTimeout(() => {
     document.querySelectorAll<HTMLElement>('.score-bar').forEach(bar => {
       bar.style.width = `${bar.dataset.pct}%`;
@@ -608,14 +847,15 @@ function showResults() {
   }, 400);
 }
 
-/* ---------- EVENT LISTENERS ---------- */
+/* ============================================================
+   EVENT LISTENERS
+   ============================================================ */
 
 startBtn.addEventListener('click', () => {
   answers.fill(null);
   autoAdvanceTimer = null;
   buildProgressDots();
   showScreen(quizScreen);
-  // Small delay to let the screen fade in before rendering the first question
   setTimeout(() => {
     currentIndex = 0;
     renderQuestion(0);
@@ -623,13 +863,10 @@ startBtn.addEventListener('click', () => {
 });
 
 prevBtn.addEventListener('click', () => {
-  if (currentIndex > 0) {
-    goToQuestion(currentIndex - 1);
-  }
+  if (currentIndex > 0) goToQuestion(currentIndex - 1);
 });
 
 nextBtn.addEventListener('click', () => {
-  // Cancel any pending auto-advance — we are advancing manually right now
   if (autoAdvanceTimer !== null) {
     clearTimeout(autoAdvanceTimer);
     autoAdvanceTimer = null;
@@ -645,7 +882,6 @@ restartBtn.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-// Exit quiz — return to welcome screen without completing the quiz
 exitQuizBtn.addEventListener('click', () => {
   if (autoAdvanceTimer !== null) {
     clearTimeout(autoAdvanceTimer);
