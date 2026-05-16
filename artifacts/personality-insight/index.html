@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <title>Personality Insight</title>
-    <meta name="description" content="Discover your personality type with 10 thoughtful questions. Get your traits, strengths, and self-improvement tips." />
+    <meta name="description" content="Discover your personality type with 12 thoughtful questions. Get your traits, strengths, and self-improvement tips." />
     <meta name="robots" content="index, follow" />
     <meta property="og:title" content="Personality Insight" />
-    <meta property="og:description" content="Discover your personality type with 10 thoughtful questions." />
+    <meta property="og:description" content="Discover your personality type with 12 thoughtful questions." />
     <meta property="og:type" content="website" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,6 @@
   </head>
   <body>
 
-    <!-- ===== APP WRAPPER ===== -->
     <div class="app">
 
       <!-- ===== HEADER ===== -->
@@ -25,46 +24,152 @@
             <span class="logo-icon">✦</span>
             <span class="logo-text">Personality Insight</span>
           </div>
+          <nav class="header-nav">
+            <a href="#how-it-works" class="nav-link">How It Works</a>
+            <a href="#types-section" class="nav-link">Types</a>
+            <button class="btn btn-primary btn-sm" id="header-start-btn">Begin Quiz</button>
+          </nav>
         </div>
       </header>
 
-      <!-- ===== MAIN CONTENT ===== -->
+      <!-- ===== MAIN ===== -->
       <main class="main">
 
-        <!-- WELCOME SCREEN -->
-        <section id="welcome-screen" class="screen active">
-          <div class="welcome-content">
-            <div class="welcome-badge">12 Questions · ~4 Minutes</div>
-            <h1 class="welcome-title">Discover Your <span class="gradient-text">Personality Type</span></h1>
-            <p class="welcome-desc">
-              Answer 12 carefully crafted questions to uncover your unique personality blueprint —
-              your strengths, blind spots, and a personalised growth path. One of 10 types awaits you.
-            </p>
-            <div class="personality-preview">
-              <div class="preview-type"><span class="preview-icon">🏆</span><span>Leader</span></div>
-              <div class="preview-type"><span class="preview-icon">🎨</span><span>Creative Thinker</span></div>
-              <div class="preview-type"><span class="preview-icon">🧘</span><span>Calm Observer</span></div>
-              <div class="preview-type"><span class="preview-icon">🌍</span><span>Social Explorer</span></div>
-              <div class="preview-type"><span class="preview-icon">🔬</span><span>Logical Analyzer</span></div>
-              <div class="preview-type"><span class="preview-icon">🫀</span><span>The Empath</span></div>
-              <div class="preview-type"><span class="preview-icon">🌄</span><span>Adventurer</span></div>
-              <div class="preview-type"><span class="preview-icon">🎯</span><span>Perfectionist</span></div>
-              <div class="preview-type"><span class="preview-icon">🔭</span><span>Visionary</span></div>
-              <div class="preview-type"><span class="preview-icon">🌱</span><span>Nurturer</span></div>
+        <!-- ===================== WELCOME SCREEN ===================== -->
+        <section id="welcome-screen" class="screen active welcome-screen-layout">
+
+          <!-- HERO -->
+          <div class="welcome-hero">
+            <div class="hero-inner">
+              <div class="welcome-badge">
+                <span class="badge-dot"></span>
+                12 Questions · ~4 Minutes · 10 Personality Types
+              </div>
+              <h1 class="welcome-title">
+                Discover Your<br><span class="gradient-text">Personality Type</span>
+              </h1>
+              <p class="welcome-desc">
+                Answer 12 carefully crafted questions to uncover your unique personality blueprint — your strengths, blind spots, and a personalised growth path.
+              </p>
+
+              <!-- CTA Buttons -->
+              <div class="hero-ctas">
+                <button class="btn btn-primary btn-lg" id="start-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  Take the Quiz Solo
+                </button>
+                <button class="btn btn-outline btn-lg" id="compare-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  Compare with a Friend
+                </button>
+              </div>
+
+              <!-- Scroll cue -->
+              <div class="scroll-cue">
+                <span>Scroll to explore</span>
+                <div class="scroll-arrow">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                </div>
+              </div>
             </div>
-            <button class="btn btn-primary" id="start-btn">
-              <span>Begin Quiz</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
+
+            <!-- Floating type pills around hero -->
+            <div class="hero-float-pills" aria-hidden="true">
+              <span class="float-pill pill-1">🏆 Leader</span>
+              <span class="float-pill pill-2">🎨 Creative</span>
+              <span class="float-pill pill-3">🔭 Visionary</span>
+              <span class="float-pill pill-4">🫀 Empath</span>
+              <span class="float-pill pill-5">🌄 Adventurer</span>
+            </div>
           </div>
+
+          <!-- HOW IT WORKS -->
+          <div class="welcome-section" id="how-it-works">
+            <div class="section-inner">
+              <p class="section-eyebrow">The Process</p>
+              <h2 class="section-title">How It Works</h2>
+              <div class="steps-grid">
+                <div class="step-card">
+                  <div class="step-num">01</div>
+                  <div class="step-icon">🧠</div>
+                  <h3 class="step-title">Answer 12 Questions</h3>
+                  <p class="step-desc">A mix of multiple-choice and slider questions designed by behavioural experts to reveal your true personality patterns.</p>
+                </div>
+                <div class="step-card">
+                  <div class="step-num">02</div>
+                  <div class="step-icon">⚡</div>
+                  <h3 class="step-title">Instant Analysis</h3>
+                  <p class="step-desc">Your answers are analysed across 10 personality dimensions in real time to calculate your unique type profile.</p>
+                </div>
+                <div class="step-card">
+                  <div class="step-num">03</div>
+                  <div class="step-icon">✨</div>
+                  <h3 class="step-title">Discover Your Blueprint</h3>
+                  <p class="step-desc">Get a detailed breakdown of your strengths, blind spots, and personalised growth tips — plus a full score chart.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 10 PERSONALITY TYPES -->
+          <div class="welcome-section welcome-section-alt" id="types-section">
+            <div class="section-inner">
+              <p class="section-eyebrow">The Types</p>
+              <h2 class="section-title">Which one are you?</h2>
+              <p class="section-sub">One of these 10 archetypes is waiting to be uncovered. Most people carry strong traits from 2–3 types.</p>
+              <div class="types-grid">
+                <div class="type-card" style="--t-clr:#f59e0b"><span class="type-emoji">🏆</span><span class="type-name">Leader</span><span class="type-tag">Decisive · Bold</span></div>
+                <div class="type-card" style="--t-clr:#ec4899"><span class="type-emoji">🎨</span><span class="type-name">Creative Thinker</span><span class="type-tag">Imaginative · Original</span></div>
+                <div class="type-card" style="--t-clr:#34d399"><span class="type-emoji">🧘</span><span class="type-name">Calm Observer</span><span class="type-tag">Patient · Deep</span></div>
+                <div class="type-card" style="--t-clr:#fb923c"><span class="type-emoji">🌍</span><span class="type-name">Social Explorer</span><span class="type-tag">Warm · Magnetic</span></div>
+                <div class="type-card" style="--t-clr:#60a5fa"><span class="type-emoji">🔬</span><span class="type-name">Logical Analyzer</span><span class="type-tag">Precise · Rational</span></div>
+                <div class="type-card" style="--t-clr:#f472b6"><span class="type-emoji">🫀</span><span class="type-name">The Empath</span><span class="type-tag">Feeling · Attuned</span></div>
+                <div class="type-card" style="--t-clr:#f97316"><span class="type-emoji">🌄</span><span class="type-name">Adventurer</span><span class="type-tag">Fearless · Free</span></div>
+                <div class="type-card" style="--t-clr:#a78bfa"><span class="type-emoji">🎯</span><span class="type-name">Perfectionist</span><span class="type-tag">Thorough · High-Standard</span></div>
+                <div class="type-card" style="--t-clr:#818cf8"><span class="type-emoji">🔭</span><span class="type-name">Visionary</span><span class="type-tag">Future-Focused · Bold</span></div>
+                <div class="type-card" style="--t-clr:#4ade80"><span class="type-emoji">🌱</span><span class="type-name">Nurturer</span><span class="type-tag">Caring · Supportive</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FINAL CTA -->
+          <div class="welcome-section welcome-cta-section">
+            <div class="section-inner text-center">
+              <h2 class="section-title">Ready to find out?</h2>
+              <p class="section-sub">Take the quiz solo, or invite a friend and compare your types side by side.</p>
+              <div class="hero-ctas">
+                <button class="btn btn-primary btn-lg" id="start-btn-2">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  Take the Quiz Solo
+                </button>
+                <button class="btn btn-outline btn-lg" id="compare-btn-2">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  Compare with a Friend
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- FOOTER -->
+          <footer class="welcome-footer">
+            <p>Personality Insight · Built for curiosity, growth, and connection.</p>
+          </footer>
+
         </section>
 
-        <!-- QUIZ SCREEN -->
-        <section id="quiz-screen" class="screen">
+        <!-- ===================== QUIZ SCREEN ===================== -->
+        <section id="quiz-screen" class="screen quiz-screen-layout">
+
+          <!-- Player indicator (visible in compare mode) -->
+          <div class="player-indicator" id="player-indicator" style="display:none">
+            <span class="player-badge" id="player-badge">👤 Player 1</span>
+            <span class="player-hint">Answer honestly — your friend won't see your answers until both are done.</span>
+          </div>
+
           <!-- Progress Bar -->
           <div class="progress-container">
             <div class="progress-meta">
-              <span class="progress-label">Question <span id="current-q">1</span> of <span id="total-q">10</span></span>
+              <span class="progress-label">Question <span id="current-q">1</span> of <span id="total-q">12</span></span>
               <div class="progress-meta-right">
                 <span class="progress-pct" id="progress-pct">0%</span>
                 <button class="exit-quiz-btn" id="exit-quiz-btn" title="Exit quiz">
@@ -83,11 +188,7 @@
           <div class="question-card" id="question-card">
             <div class="question-number" id="question-number">01</div>
             <h2 class="question-text" id="question-text">Loading...</h2>
-
-            <!-- Multiple Choice Answers -->
             <div class="answers-grid" id="answers-grid"></div>
-
-            <!-- Slider (shown for slider questions) -->
             <div class="slider-container" id="slider-container" style="display:none">
               <div class="slider-labels">
                 <span id="slider-label-left">Left</span>
@@ -98,8 +199,6 @@
                 <span id="slider-value-text">Balanced</span>
               </div>
             </div>
-
-            <!-- Navigation -->
             <div class="question-nav">
               <button class="btn btn-ghost" id="prev-btn" disabled>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -113,68 +212,139 @@
           </div>
         </section>
 
-        <!-- RESULTS SCREEN -->
-        <section id="results-screen" class="screen">
-          <div class="results-wrapper">
+        <!-- ===================== HANDOVER SCREEN ===================== -->
+        <section id="handover-screen" class="screen quiz-screen-layout">
+          <div class="handover-card">
+            <div class="handover-icon">🤝</div>
+            <h2 class="handover-title">Player 1, you're done!</h2>
+            <p class="handover-desc">Great answers. Now hand the device to <strong>Player 2</strong> and let them take the quiz — they won't see your answers or results until both are complete.</p>
+            <div class="handover-result-preview" id="handover-preview">
+              <span class="handover-type-icon" id="handover-icon">🏆</span>
+              <div>
+                <span class="handover-label">Your type has been saved</span>
+                <span class="handover-type-name" id="handover-type-name">Calculating...</span>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-lg" id="handover-next-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Player 2 — Start Quiz
+            </button>
+            <button class="btn btn-ghost" id="handover-exit-btn">Exit Without Comparing</button>
+          </div>
+        </section>
 
-            <!-- Result Hero -->
+        <!-- ===================== SOLO RESULTS SCREEN ===================== -->
+        <section id="results-screen" class="screen quiz-screen-layout">
+          <div class="results-wrapper">
             <div class="result-hero" id="result-hero">
               <div class="result-badge">Your Personality Type</div>
               <div class="result-icon" id="result-icon">🏆</div>
               <h1 class="result-title" id="result-title">Leader</h1>
               <p class="result-desc" id="result-desc">You are a natural born leader...</p>
             </div>
-
-            <!-- Score Bar -->
             <div class="score-section">
-              <h3 class="section-label">Personality Score</h3>
+              <h3 class="section-label">Personality Score Breakdown</h3>
               <div class="score-bars" id="score-bars"></div>
             </div>
-
-            <!-- Cards Row -->
             <div class="result-cards">
-
-              <!-- Positive Traits -->
               <div class="result-card card-positive">
-                <div class="card-header">
-                  <span class="card-icon">✨</span>
-                  <h3 class="card-title">Positive Traits</h3>
-                </div>
+                <div class="card-header"><span class="card-icon">✨</span><h3 class="card-title">Positive Traits</h3></div>
                 <ul class="trait-list" id="positive-traits"></ul>
               </div>
-
-              <!-- Caution Areas -->
               <div class="result-card card-caution">
-                <div class="card-header">
-                  <span class="card-icon">⚡</span>
-                  <h3 class="card-title">Things To Watch</h3>
-                </div>
+                <div class="card-header"><span class="card-icon">⚡</span><h3 class="card-title">Things To Watch</h3></div>
                 <ul class="trait-list" id="caution-traits"></ul>
               </div>
-
-              <!-- Improvement Tips -->
               <div class="result-card card-tips">
-                <div class="card-header">
-                  <span class="card-icon">🚀</span>
-                  <h3 class="card-title">Growth Tips</h3>
-                </div>
+                <div class="card-header"><span class="card-icon">🚀</span><h3 class="card-title">Growth Tips</h3></div>
                 <ul class="trait-list" id="tips-list"></ul>
               </div>
-
             </div>
-
-            <!-- Motivational Quote -->
             <div class="quote-card" id="quote-card">
               <span class="quote-mark">"</span>
               <p class="quote-text" id="quote-text"></p>
               <p class="quote-author" id="quote-author"></p>
             </div>
-
-            <!-- Restart -->
             <div class="restart-section">
               <button class="btn btn-ghost btn-lg" id="restart-btn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                 Retake Quiz
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== COMPARE RESULTS SCREEN ===================== -->
+        <section id="compare-screen" class="screen quiz-screen-layout">
+          <div class="compare-wrapper">
+
+            <!-- Header -->
+            <div class="compare-header">
+              <div class="compare-badge">Compatibility Results</div>
+              <h1 class="compare-title">Your Personality Match</h1>
+              <p class="compare-sub">Here's how your personalities complement each other.</p>
+            </div>
+
+            <!-- Compatibility Score -->
+            <div class="compat-score-card">
+              <div class="compat-ring">
+                <svg class="compat-svg" viewBox="0 0 120 120">
+                  <circle class="compat-track" cx="60" cy="60" r="50" fill="none" stroke-width="10"/>
+                  <circle class="compat-fill" id="compat-circle" cx="60" cy="60" r="50" fill="none" stroke-width="10" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                </svg>
+                <div class="compat-score-inner">
+                  <span class="compat-pct" id="compat-pct">—</span>
+                  <span class="compat-label-inner">match</span>
+                </div>
+              </div>
+              <div class="compat-score-text">
+                <h3 class="compat-verdict" id="compat-verdict">Calculating...</h3>
+                <p class="compat-detail" id="compat-detail">Loading your compatibility analysis...</p>
+              </div>
+            </div>
+
+            <!-- Side by Side Cards -->
+            <div class="compare-players">
+              <div class="player-result-card" id="p1-card">
+                <div class="player-label">👤 Player 1</div>
+                <div class="player-type-icon" id="p1-icon">🏆</div>
+                <h2 class="player-type-name" id="p1-type">—</h2>
+                <p class="player-type-desc" id="p1-desc">—</p>
+                <ul class="compare-trait-list" id="p1-traits"></ul>
+              </div>
+              <div class="compare-vs">VS</div>
+              <div class="player-result-card" id="p2-card">
+                <div class="player-label">👥 Player 2</div>
+                <div class="player-type-icon" id="p2-icon">🔬</div>
+                <h2 class="player-type-name" id="p2-type">—</h2>
+                <p class="player-type-desc" id="p2-desc">—</p>
+                <ul class="compare-trait-list" id="p2-traits"></ul>
+              </div>
+            </div>
+
+            <!-- What you share / differences -->
+            <div class="compare-insight-row">
+              <div class="compare-insight-card insight-shared">
+                <div class="insight-header">
+                  <span>🤝</span>
+                  <h3>What You Share</h3>
+                </div>
+                <ul id="shared-traits"></ul>
+              </div>
+              <div class="compare-insight-card insight-differ">
+                <div class="insight-header">
+                  <span>⚡</span>
+                  <h3>Where You Differ</h3>
+                </div>
+                <ul id="differ-traits"></ul>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="restart-section">
+              <button class="btn btn-primary btn-lg" id="compare-restart-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                Play Again
               </button>
             </div>
 
@@ -182,8 +352,7 @@
         </section>
 
       </main>
-
-    </div><!-- /app -->
+    </div>
 
     <script type="module" src="/src/main.ts"></script>
   </body>
