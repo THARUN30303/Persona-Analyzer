@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Personality Insight</title>
+    <meta name="description" content="Discover your personality type with 10 thoughtful questions. Get your traits, strengths, and self-improvement tips." />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="Personality Insight" />
+    <meta property="og:description" content="Discover your personality type with 10 thoughtful questions." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet">
+  </head>
+  <body>
+
+    <!-- ===== APP WRAPPER ===== -->
+    <div class="app">
+
+      <!-- ===== HEADER ===== -->
+      <header class="header">
+        <div class="header-inner">
+          <div class="logo">
+            <span class="logo-icon">✦</span>
+            <span class="logo-text">Personality Insight</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ===== MAIN CONTENT ===== -->
+      <main class="main">
+
+        <!-- WELCOME SCREEN -->
+        <section id="welcome-screen" class="screen active">
+          <div class="welcome-content">
+            <div class="welcome-badge">10 Questions · ~3 Minutes</div>
+            <h1 class="welcome-title">Discover Your <span class="gradient-text">Personality Type</span></h1>
+            <p class="welcome-desc">
+              Answer 10 carefully crafted questions to uncover your unique personality blueprint —
+              your strengths, blind spots, and a personalized growth path.
+            </p>
+            <div class="personality-preview">
+              <div class="preview-type" data-type="leader">
+                <span class="preview-icon">🏆</span>
+                <span>Leader</span>
+              </div>
+              <div class="preview-type" data-type="creative">
+                <span class="preview-icon">🎨</span>
+                <span>Creative</span>
+              </div>
+              <div class="preview-type" data-type="calm">
+                <span class="preview-icon">🧘</span>
+                <span>Calm Observer</span>
+              </div>
+              <div class="preview-type" data-type="social">
+                <span class="preview-icon">🌍</span>
+                <span>Social Explorer</span>
+              </div>
+              <div class="preview-type" data-type="logical">
+                <span class="preview-icon">🔬</span>
+                <span>Logical Analyzer</span>
+              </div>
+            </div>
+            <button class="btn btn-primary" id="start-btn">
+              <span>Begin Quiz</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- QUIZ SCREEN -->
+        <section id="quiz-screen" class="screen">
+          <!-- Progress Bar -->
+          <div class="progress-container">
+            <div class="progress-meta">
+              <span class="progress-label">Question <span id="current-q">1</span> of <span id="total-q">10</span></span>
+              <span class="progress-pct" id="progress-pct">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-dots" id="progress-dots"></div>
+          </div>
+
+          <!-- Question Card -->
+          <div class="question-card" id="question-card">
+            <div class="question-number" id="question-number">01</div>
+            <h2 class="question-text" id="question-text">Loading...</h2>
+
+            <!-- Multiple Choice Answers -->
+            <div class="answers-grid" id="answers-grid"></div>
+
+            <!-- Slider (shown for slider questions) -->
+            <div class="slider-container" id="slider-container" style="display:none">
+              <div class="slider-labels">
+                <span id="slider-label-left">Left</span>
+                <span id="slider-label-right">Right</span>
+              </div>
+              <input type="range" class="slider" id="slider-input" min="0" max="100" value="50">
+              <div class="slider-value-display">
+                <span id="slider-value-text">Balanced</span>
+              </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="question-nav">
+              <button class="btn btn-ghost" id="prev-btn" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Previous
+              </button>
+              <button class="btn btn-primary" id="next-btn" disabled>
+                Next
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- RESULTS SCREEN -->
+        <section id="results-screen" class="screen">
+          <div class="results-wrapper">
+
+            <!-- Result Hero -->
+            <div class="result-hero" id="result-hero">
+              <div class="result-badge">Your Personality Type</div>
+              <div class="result-icon" id="result-icon">🏆</div>
+              <h1 class="result-title" id="result-title">Leader</h1>
+              <p class="result-desc" id="result-desc">You are a natural born leader...</p>
+            </div>
+
+            <!-- Score Bar -->
+            <div class="score-section">
+              <h3 class="section-label">Personality Score</h3>
+              <div class="score-bars" id="score-bars"></div>
+            </div>
+
+            <!-- Cards Row -->
+            <div class="result-cards">
+
+              <!-- Positive Traits -->
+              <div class="result-card card-positive">
+                <div class="card-header">
+                  <span class="card-icon">✨</span>
+                  <h3 class="card-title">Positive Traits</h3>
+                </div>
+                <ul class="trait-list" id="positive-traits"></ul>
+              </div>
+
+              <!-- Caution Areas -->
+              <div class="result-card card-caution">
+                <div class="card-header">
+                  <span class="card-icon">⚡</span>
+                  <h3 class="card-title">Things To Watch</h3>
+                </div>
+                <ul class="trait-list" id="caution-traits"></ul>
+              </div>
+
+              <!-- Improvement Tips -->
+              <div class="result-card card-tips">
+                <div class="card-header">
+                  <span class="card-icon">🚀</span>
+                  <h3 class="card-title">Growth Tips</h3>
+                </div>
+                <ul class="trait-list" id="tips-list"></ul>
+              </div>
+
+            </div>
+
+            <!-- Motivational Quote -->
+            <div class="quote-card" id="quote-card">
+              <span class="quote-mark">"</span>
+              <p class="quote-text" id="quote-text"></p>
+              <p class="quote-author" id="quote-author"></p>
+            </div>
+
+            <!-- Restart -->
+            <div class="restart-section">
+              <button class="btn btn-ghost btn-lg" id="restart-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                Retake Quiz
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+
+    </div><!-- /app -->
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
