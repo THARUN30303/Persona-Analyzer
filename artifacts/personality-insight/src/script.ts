@@ -5,26 +5,20 @@
 
 /* ---------- TYPE DEFINITIONS ---------- */
 
-// Each answer option carries a score for each personality dimension
 interface AnswerOption {
   text: string;
-  scores: Record<string, number>;  // e.g. { leader: 3, creative: 1 }
+  scores: Record<string, number>;
 }
 
-// A question can be either multiple-choice or slider-based
 interface Question {
   type: 'choice' | 'slider';
   text: string;
-  // For choice questions
   options?: AnswerOption[];
-  // For slider questions
   leftLabel?: string;
   rightLabel?: string;
-  // Maps slider value (0-100) to dimension scores
   sliderMap?: (value: number) => Record<string, number>;
 }
 
-// The five personality types
 type PersonalityType = 'leader' | 'creative' | 'calm' | 'social' | 'logical';
 
 interface PersonalityResult {
@@ -40,8 +34,6 @@ interface PersonalityResult {
 }
 
 /* ---------- QUESTIONS ARRAY ---------- */
-// Each question contributes points toward the 5 personality types.
-// Scores are additive — the type with the highest total wins.
 
 const questions: Question[] = [
   {
@@ -60,11 +52,10 @@ const questions: Question[] = [
     leftLabel: '❤️ Pure Emotion',
     rightLabel: '🔬 Pure Logic',
     sliderMap: (v) => {
-      // Low = emotional → social/creative; High = logical
-      if (v < 25)       return { social: 2, creative: 2 };
-      if (v < 50)       return { creative: 2, social: 1 };
-      if (v < 75)       return { logical: 2, calm: 1 };
-      return               { logical: 3 };
+      if (v < 25)  return { social: 2, creative: 2 };
+      if (v < 50)  return { creative: 2, social: 1 };
+      if (v < 75)  return { logical: 2, calm: 1 };
+      return            { logical: 3 };
     },
   },
   {
@@ -93,10 +84,10 @@ const questions: Question[] = [
     leftLabel: '🌊 Stay Calm',
     rightLabel: '🔥 Take Action',
     sliderMap: (v) => {
-      if (v < 25)       return { calm: 3 };
-      if (v < 50)       return { calm: 2, logical: 1 };
-      if (v < 75)       return { leader: 2, social: 1 };
-      return               { leader: 3 };
+      if (v < 25)  return { calm: 3 };
+      if (v < 50)  return { calm: 2, logical: 1 };
+      if (v < 75)  return { leader: 2, social: 1 };
+      return            { leader: 3 };
     },
   },
   {
@@ -115,7 +106,7 @@ const questions: Question[] = [
     text: 'Which of these best describes how you learn?',
     options: [
       { text: 'By doing and experimenting hands-on.', scores: { creative: 2, leader: 1 } },
-      { text: 'Through discussion and others\'s perspectives.', scores: { social: 3 } },
+      { text: "Through discussion and others's perspectives.", scores: { social: 3 } },
       { text: 'By reading, researching, and deep analysis.', scores: { logical: 3 } },
       { text: 'Through quiet reflection and my own pace.', scores: { calm: 3 } },
     ],
@@ -126,10 +117,10 @@ const questions: Question[] = [
     leftLabel: '🙅 I ignore them',
     rightLabel: '🫂 Highly important',
     sliderMap: (v) => {
-      if (v < 25)       return { logical: 2, calm: 1 };
-      if (v < 50)       return { leader: 2, logical: 1 };
-      if (v < 75)       return { social: 2, creative: 1 };
-      return               { social: 3 };
+      if (v < 25)  return { logical: 2, calm: 1 };
+      if (v < 50)  return { leader: 2, logical: 1 };
+      if (v < 75)  return { social: 2, creative: 1 };
+      return            { social: 3 };
     },
   },
   {
@@ -186,7 +177,6 @@ const personalityResults: Record<PersonalityType, PersonalityResult> = {
     quote: 'The greatest leader is not necessarily the one who does the greatest things, but the one who gets people to do the greatest things.',
     quoteAuthor: '— Ronald Reagan',
   },
-
   creative: {
     icon: '🎨',
     title: 'The Creative Thinker',
@@ -215,7 +205,6 @@ const personalityResults: Record<PersonalityType, PersonalityResult> = {
     quote: 'Creativity is intelligence having fun.',
     quoteAuthor: '— Albert Einstein',
   },
-
   calm: {
     icon: '🧘',
     title: 'The Calm Observer',
@@ -244,7 +233,6 @@ const personalityResults: Record<PersonalityType, PersonalityResult> = {
     quote: 'In the midst of chaos, there is also opportunity. The mind is everything; what you think, you become.',
     quoteAuthor: '— Buddha',
   },
-
   social: {
     icon: '🌍',
     title: 'The Social Explorer',
@@ -273,7 +261,6 @@ const personalityResults: Record<PersonalityType, PersonalityResult> = {
     quote: 'You can make more friends in two months by becoming interested in other people than in two years by trying to get people interested in you.',
     quoteAuthor: '— Dale Carnegie',
   },
-
   logical: {
     icon: '🔬',
     title: 'The Logical Analyzer',
@@ -294,8 +281,8 @@ const personalityResults: Record<PersonalityType, PersonalityResult> = {
       'Struggles with ambiguity and uncertainty',
     ],
     improvementTips: [
-      'Practise emotional curiosity — ask "how does this feel?" as well as "what does this mean?"',
-      'Set a decision deadline — perfect analysis doesn\'t exist',
+      "Practise emotional curiosity — ask \"how does this feel?\" as well as \"what does this mean?\"",
+      "Set a decision deadline — perfect analysis doesn't exist",
       'Embrace calculated risk — not all value is measurable',
       'Share your thinking process — others learn from your mind',
     ],
@@ -307,82 +294,75 @@ const personalityResults: Record<PersonalityType, PersonalityResult> = {
 /* ---------- STATE ---------- */
 
 let currentIndex = 0;
-// stores the answer for each question (either a selected option index, or a slider value)
 const answers: Array<number | null> = new Array(questions.length).fill(null);
+
+// Track any pending auto-advance timer so we can cancel it if needed
+let autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
 
 /* ---------- DOM REFERENCES ---------- */
 
-const startBtn       = document.getElementById('start-btn') as HTMLButtonElement;
-const prevBtn        = document.getElementById('prev-btn') as HTMLButtonElement;
-const nextBtn        = document.getElementById('next-btn') as HTMLButtonElement;
-const restartBtn     = document.getElementById('restart-btn') as HTMLButtonElement;
+const startBtn        = document.getElementById('start-btn') as HTMLButtonElement;
+const prevBtn         = document.getElementById('prev-btn') as HTMLButtonElement;
+const nextBtn         = document.getElementById('next-btn') as HTMLButtonElement;
+const restartBtn      = document.getElementById('restart-btn') as HTMLButtonElement;
 
-const welcomeScreen  = document.getElementById('welcome-screen') as HTMLElement;
-const quizScreen     = document.getElementById('quiz-screen') as HTMLElement;
-const resultsScreen  = document.getElementById('results-screen') as HTMLElement;
+const welcomeScreen   = document.getElementById('welcome-screen') as HTMLElement;
+const quizScreen      = document.getElementById('quiz-screen') as HTMLElement;
+const resultsScreen   = document.getElementById('results-screen') as HTMLElement;
 
-const currentQEl     = document.getElementById('current-q') as HTMLElement;
-const totalQEl       = document.getElementById('total-q') as HTMLElement;
-const progressPct    = document.getElementById('progress-pct') as HTMLElement;
-const progressFill   = document.getElementById('progress-fill') as HTMLElement;
-const progressDots   = document.getElementById('progress-dots') as HTMLElement;
+const currentQEl      = document.getElementById('current-q') as HTMLElement;
+const totalQEl        = document.getElementById('total-q') as HTMLElement;
+const progressPct     = document.getElementById('progress-pct') as HTMLElement;
+const progressFill    = document.getElementById('progress-fill') as HTMLElement;
+const progressDots    = document.getElementById('progress-dots') as HTMLElement;
 
-const questionCard   = document.getElementById('question-card') as HTMLElement;
-const questionNumber = document.getElementById('question-number') as HTMLElement;
-const questionText   = document.getElementById('question-text') as HTMLElement;
-const answersGrid    = document.getElementById('answers-grid') as HTMLElement;
+const questionCard    = document.getElementById('question-card') as HTMLElement;
+const questionNumber  = document.getElementById('question-number') as HTMLElement;
+const questionText    = document.getElementById('question-text') as HTMLElement;
+const answersGrid     = document.getElementById('answers-grid') as HTMLElement;
 const sliderContainer = document.getElementById('slider-container') as HTMLElement;
-const sliderInput    = document.getElementById('slider-input') as HTMLInputElement;
-const sliderLabelLeft  = document.getElementById('slider-label-left') as HTMLElement;
-const sliderLabelRight = document.getElementById('slider-label-right') as HTMLElement;
-const sliderValueText  = document.getElementById('slider-value-text') as HTMLElement;
+const sliderInput     = document.getElementById('slider-input') as HTMLInputElement;
+const sliderLabelLeft = document.getElementById('slider-label-left') as HTMLElement;
+const sliderLabelRight= document.getElementById('slider-label-right') as HTMLElement;
+const sliderValueText = document.getElementById('slider-value-text') as HTMLElement;
 
 /* ---------- HELPERS ---------- */
 
-/** Switch which screen is visible with a fade animation */
 function showScreen(screen: HTMLElement) {
   [welcomeScreen, quizScreen, resultsScreen].forEach(s => {
     s.classList.remove('active');
     s.style.display = 'none';
   });
   screen.style.display = 'block';
-  // Trigger animation on next frame
   requestAnimationFrame(() => screen.classList.add('active'));
 }
 
-/** Build the progress dot row */
 function buildProgressDots() {
   progressDots.innerHTML = '';
   questions.forEach((_, i) => {
     const dot = document.createElement('div');
     dot.className = 'progress-dot';
-    dot.dataset.index = String(i);
     progressDots.appendChild(dot);
   });
 }
 
-/** Update progress bar and dots based on current index */
 function updateProgress(idx: number) {
   const pct = Math.round((idx / questions.length) * 100);
-
-  currentQEl.textContent  = String(idx + 1);
-  totalQEl.textContent    = String(questions.length);
-  progressPct.textContent = `${pct}%`;
+  currentQEl.textContent   = String(idx + 1);
+  totalQEl.textContent     = String(questions.length);
+  progressPct.textContent  = `${pct}%`;
   progressFill.style.width = `${pct}%`;
 
-  // Update dot states
   const dots = progressDots.querySelectorAll('.progress-dot');
   dots.forEach((dot, i) => {
     dot.classList.remove('answered', 'current');
-    if (i < idx)  dot.classList.add('answered');
+    if (i < idx)   dot.classList.add('answered');
     if (i === idx) dot.classList.add('current');
   });
 }
 
-/** Get a letter label A / B / C / D / E */
 const LETTERS = ['A', 'B', 'C', 'D', 'E'];
 
-/** Map a 0-100 slider value to a descriptive label */
 function sliderLabel(value: number): string {
   if (value < 15) return 'Strongly Left';
   if (value < 35) return 'Leaning Left';
@@ -391,120 +371,143 @@ function sliderLabel(value: number): string {
   return 'Strongly Right';
 }
 
+/* ---------- ADVANCE / NAVIGATE ---------- */
+
+/** Cancel any pending auto-advance and move to a specific question index */
+function goToQuestion(idx: number) {
+  // Cancel any pending auto-advance to prevent double-advancing
+  if (autoAdvanceTimer !== null) {
+    clearTimeout(autoAdvanceTimer);
+    autoAdvanceTimer = null;
+  }
+  currentIndex = idx;
+  renderQuestion(idx);
+}
+
+/** Move forward one question (or show results if on the last) */
+function advance() {
+  if (currentIndex < questions.length - 1) {
+    goToQuestion(currentIndex + 1);
+  } else {
+    showResults();
+  }
+}
+
 /* ---------- RENDER QUESTION ---------- */
 
-function renderQuestion(idx: number, direction: 'forward' | 'back' = 'forward') {
+function renderQuestion(idx: number) {
   const q = questions[idx];
 
-  // Animate card out
+  // Animate old card out, then swap content in
+  questionCard.classList.remove('entering');
   questionCard.classList.add('leaving');
 
   setTimeout(() => {
     questionCard.classList.remove('leaving');
 
-    // Set content
+    // ---- Populate header ----
     questionNumber.textContent = String(idx + 1).padStart(2, '0');
     questionText.textContent   = q.text;
 
-    answersGrid.innerHTML = '';
+    // ---- Reset UI areas ----
+    answersGrid.innerHTML      = '';
+    answersGrid.style.display  = 'grid';
     sliderContainer.style.display = 'none';
-    answersGrid.style.display     = 'grid';
 
     if (q.type === 'choice' && q.options) {
-      // Render multiple choice buttons
+      // ---- Multiple choice ----
       q.options.forEach((opt, i) => {
         const btn = document.createElement('button');
         btn.className = 'answer-btn';
-        btn.innerHTML = `
-          <span class="answer-letter">${LETTERS[i]}</span>
-          <span>${opt.text}</span>
-        `;
+        btn.innerHTML = `<span class="answer-letter">${LETTERS[i]}</span><span>${opt.text}</span>`;
 
-        // Pre-select if already answered
+        // Restore previously selected answer
         if (answers[idx] === i) btn.classList.add('selected');
 
-        btn.addEventListener('click', () => selectAnswer(idx, i));
+        btn.addEventListener('click', () => {
+          // Mark answer
+          answers[idx] = i;
+
+          // Highlight selected button
+          answersGrid.querySelectorAll('.answer-btn').forEach((b, bi) => {
+            b.classList.toggle('selected', bi === i);
+          });
+
+          // Mark dot as answered
+          progressDots.querySelectorAll('.progress-dot')[idx]?.classList.add('answered');
+
+          // Enable next button immediately (user can also click it)
+          nextBtn.disabled = false;
+
+          // Auto-advance after a short delay for better UX
+          // Store the timer reference so it can be cancelled if Next is clicked first
+          if (autoAdvanceTimer !== null) clearTimeout(autoAdvanceTimer);
+          autoAdvanceTimer = setTimeout(() => {
+            autoAdvanceTimer = null;
+            advance();
+          }, 380);
+        });
+
         answersGrid.appendChild(btn);
       });
 
+      // Next is disabled until a choice is made (unless already answered)
+      nextBtn.disabled = answers[idx] === null;
+
     } else if (q.type === 'slider') {
-      // Render slider
-      answersGrid.style.display = 'none';
+      // ---- Slider ----
+      answersGrid.style.display  = 'none';
       sliderContainer.style.display = 'block';
 
-      sliderLabelLeft.textContent  = q.leftLabel ?? '';
+      sliderLabelLeft.textContent  = q.leftLabel  ?? '';
       sliderLabelRight.textContent = q.rightLabel ?? '';
 
-      const savedValue = answers[idx] as number ?? 50;
-      sliderInput.value            = String(savedValue);
-      sliderValueText.textContent  = sliderLabel(savedValue);
+      // Default value is 50 (centre) if not yet answered
+      const initValue = answers[idx] !== null ? (answers[idx] as number) : 50;
+      answers[idx] = initValue;          // persist default so score calc works
 
-      // Slider is always "answered" once we enter the question
-      if (answers[idx] === null) answers[idx] = 50;
+      sliderInput.value           = String(initValue);
+      sliderValueText.textContent = sliderLabel(initValue);
 
+      // Rebuild the gradient fill for the slider track
+      updateSliderFill(initValue);
+
+      // Update value label and stored answer as user drags
       sliderInput.oninput = () => {
         const v = Number(sliderInput.value);
         answers[idx]                = v;
         sliderValueText.textContent = sliderLabel(v);
-        nextBtn.disabled            = false;
+        updateSliderFill(v);
       };
+
+      // Slider questions are always "answerable" — Next is enabled immediately
+      nextBtn.disabled = false;
     }
 
-    // Show nav buttons correctly
+    // ---- Nav buttons ----
     prevBtn.disabled = idx === 0;
-    updateNextButton(idx);
 
-    // Animate card in
-    questionCard.classList.add('entering');
-    setTimeout(() => questionCard.classList.remove('entering'), 350);
+    // Update next button label
+    nextBtn.innerHTML =
+      idx === questions.length - 1
+        ? `See Results <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`
+        : `Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
 
     updateProgress(idx);
-  }, direction === 'forward' ? 200 : 150);
+
+    // Animate new card in
+    requestAnimationFrame(() => {
+      questionCard.classList.add('entering');
+      setTimeout(() => questionCard.classList.remove('entering'), 350);
+    });
+
+  }, 220);
 }
 
-/** Enable/disable next button based on whether this question is answered */
-function updateNextButton(idx: number) {
-  const q = questions[idx];
-  if (q.type === 'slider') {
-    nextBtn.disabled = false;   // Slider is always answered (defaults to 50)
-    nextBtn.textContent = idx === questions.length - 1 ? 'See Results →' : 'Next →';
-  } else {
-    nextBtn.disabled = answers[idx] === null;
-  }
-
-  // Update text for last question
-  nextBtn.innerHTML =
-    idx === questions.length - 1
-      ? `See Results <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`
-      : `Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
-  if (nextBtn.disabled) return;
-}
-
-/** Handle a multiple-choice selection */
-function selectAnswer(questionIdx: number, optionIdx: number) {
-  answers[questionIdx] = optionIdx;
-
-  // Visual feedback
-  const btns = answersGrid.querySelectorAll('.answer-btn');
-  btns.forEach((b, i) => {
-    b.classList.toggle('selected', i === optionIdx);
-  });
-
-  nextBtn.disabled = false;
-
-  // Mark dot as answered
-  const dots = progressDots.querySelectorAll('.progress-dot');
-  dots[questionIdx]?.classList.add('answered');
-
-  // Auto-advance after a short delay for better UX
-  setTimeout(() => {
-    if (currentIndex < questions.length - 1) {
-      currentIndex++;
-      renderQuestion(currentIndex, 'forward');
-    } else {
-      showResults();
-    }
-  }, 380);
+/** Update the visual fill gradient on the range slider track */
+function updateSliderFill(value: number) {
+  const pct = value + '%';
+  sliderInput.style.background = `linear-gradient(to right, var(--accent-1) 0%, var(--accent-2) ${pct}, var(--bg-surface) ${pct}, var(--bg-surface) 100%)`;
 }
 
 /* ---------- CALCULATE RESULTS ---------- */
@@ -522,13 +525,13 @@ function calculateResults(): Record<PersonalityType, number> {
       const opt = q.options[answer as number];
       if (opt) {
         for (const [type, pts] of Object.entries(opt.scores)) {
-          scores[type as PersonalityType] = (scores[type as PersonalityType] ?? 0) + pts;
+          scores[type as PersonalityType] += pts;
         }
       }
     } else if (q.type === 'slider' && q.sliderMap) {
       const mapped = q.sliderMap(answer as number);
       for (const [type, pts] of Object.entries(mapped)) {
-        scores[type as PersonalityType] = (scores[type as PersonalityType] ?? 0) + pts;
+        scores[type as PersonalityType] += pts;
       }
     }
   });
@@ -541,22 +544,20 @@ function calculateResults(): Record<PersonalityType, number> {
 function showResults() {
   const scores = calculateResults();
 
-  // Find the winning personality type
   const winner = (Object.entries(scores) as [PersonalityType, number][])
     .sort((a, b) => b[1] - a[1])[0][0];
 
   const result = personalityResults[winner];
+  const maxScore = Math.max(...Object.values(scores)) || 1;
 
-  // Total score for percentage normalisation
-  const totalPossible = Math.max(...Object.values(scores)) || 1;
+  // Hero
+  (document.getElementById('result-icon') as HTMLElement).textContent  = result.icon;
+  const titleEl = document.getElementById('result-title') as HTMLElement;
+  titleEl.textContent   = result.title;
+  titleEl.style.color   = result.color;
+  (document.getElementById('result-desc') as HTMLElement).textContent  = result.description;
 
-  // ---------- Hero ----------
-  (document.getElementById('result-icon') as HTMLElement).textContent = result.icon;
-  (document.getElementById('result-title') as HTMLElement).textContent = result.title;
-  (document.getElementById('result-title') as HTMLElement).style.color = result.color;
-  (document.getElementById('result-desc') as HTMLElement).textContent = result.description;
-
-  // ---------- Score Bars ----------
+  // Score bars
   const scoreBars = document.getElementById('score-bars') as HTMLElement;
   scoreBars.innerHTML = '';
 
@@ -568,88 +569,77 @@ function showResults() {
     leader: '#f59e0b', creative: '#ec4899', calm: '#34d399', social: '#fb923c', logical: '#60a5fa',
   };
 
-  // Sort by score descending for display
   (Object.entries(scores) as [PersonalityType, number][])
     .sort((a, b) => b[1] - a[1])
     .forEach(([type, score]) => {
-      const pct = Math.round((score / totalPossible) * 100);
+      const pct = Math.round((score / maxScore) * 100);
       const row = document.createElement('div');
       row.className = 'score-row';
       row.innerHTML = `
         <span class="score-label">${typeLabels[type]}</span>
         <div class="score-track">
-          <div class="score-bar" style="background: ${typeColors[type]};" data-pct="${pct}"></div>
+          <div class="score-bar" style="background:${typeColors[type]};" data-pct="${pct}"></div>
         </div>
         <span class="score-num">${pct}%</span>
       `;
       scoreBars.appendChild(row);
     });
 
-  // ---------- Trait Lists ----------
-  const positiveList = document.getElementById('positive-traits') as HTMLElement;
-  const cautionList  = document.getElementById('caution-traits') as HTMLElement;
-  const tipsList     = document.getElementById('tips-list') as HTMLElement;
+  // Trait lists
+  (document.getElementById('positive-traits') as HTMLElement).innerHTML =
+    result.positiveTraits.map(t => `<li>${t}</li>`).join('');
+  (document.getElementById('caution-traits') as HTMLElement).innerHTML =
+    result.cautionAreas.map(t => `<li>${t}</li>`).join('');
+  (document.getElementById('tips-list') as HTMLElement).innerHTML =
+    result.improvementTips.map(t => `<li>${t}</li>`).join('');
 
-  positiveList.innerHTML = result.positiveTraits.map(t => `<li>${t}</li>`).join('');
-  cautionList.innerHTML  = result.cautionAreas.map(t => `<li>${t}</li>`).join('');
-  tipsList.innerHTML     = result.improvementTips.map(t => `<li>${t}</li>`).join('');
-
-  // ---------- Quote ----------
+  // Quote
   (document.getElementById('quote-text') as HTMLElement).textContent   = result.quote;
   (document.getElementById('quote-author') as HTMLElement).textContent = result.quoteAuthor;
 
-  // Show screen
   showScreen(resultsScreen);
 
-  // Animate score bars after a short delay (so they're visible)
+  // Animate score bars after screen transition
   setTimeout(() => {
-    document.querySelectorAll('.score-bar').forEach(bar => {
-      const pct = (bar as HTMLElement).dataset.pct;
-      (bar as HTMLElement).style.width = `${pct}%`;
+    document.querySelectorAll<HTMLElement>('.score-bar').forEach(bar => {
+      bar.style.width = `${bar.dataset.pct}%`;
     });
-  }, 300);
+  }, 400);
 }
 
 /* ---------- EVENT LISTENERS ---------- */
 
-// Start quiz
 startBtn.addEventListener('click', () => {
-  currentIndex = 0;
   answers.fill(null);
+  autoAdvanceTimer = null;
   buildProgressDots();
-  updateProgress(0);
   showScreen(quizScreen);
-  renderQuestion(0, 'forward');
+  // Small delay to let the screen fade in before rendering the first question
+  setTimeout(() => {
+    currentIndex = 0;
+    renderQuestion(0);
+  }, 100);
 });
 
-// Previous question
 prevBtn.addEventListener('click', () => {
   if (currentIndex > 0) {
-    currentIndex--;
-    renderQuestion(currentIndex, 'back');
+    goToQuestion(currentIndex - 1);
   }
 });
 
-// Next question / submit
 nextBtn.addEventListener('click', () => {
-  if (currentIndex < questions.length - 1) {
-    currentIndex++;
-    renderQuestion(currentIndex, 'forward');
-  } else {
-    showResults();
+  // Cancel any pending auto-advance — we are advancing manually right now
+  if (autoAdvanceTimer !== null) {
+    clearTimeout(autoAdvanceTimer);
+    autoAdvanceTimer = null;
   }
+  advance();
 });
 
-// Restart
 restartBtn.addEventListener('click', () => {
-  currentIndex = 0;
   answers.fill(null);
+  autoAdvanceTimer = null;
+  currentIndex = 0;
   showScreen(welcomeScreen);
-
-  // Smooth scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
-
-/* ---------- INIT ---------- */
-// Total questions label on welcome screen is static in HTML
-// Show the welcome screen on load (it's already marked active in HTML)
