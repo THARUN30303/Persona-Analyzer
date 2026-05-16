@@ -323,10 +323,50 @@ body::before {
   font-weight: 500;
 }
 
+.progress-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
 .progress-pct {
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--accent-3);
+}
+
+/* Exit Quiz button */
+.exit-quiz-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.28rem 0.75rem;
+  cursor: pointer;
+  transition: all var(--normal);
+  letter-spacing: 0.01em;
+}
+
+.exit-quiz-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-bright);
+  background: var(--bg-card);
+}
+
+.exit-quiz-btn svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity var(--fast);
+}
+
+.exit-quiz-btn:hover svg {
+  opacity: 1;
 }
 
 .progress-track {

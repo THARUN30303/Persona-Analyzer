@@ -305,6 +305,7 @@ const startBtn        = document.getElementById('start-btn') as HTMLButtonElemen
 const prevBtn         = document.getElementById('prev-btn') as HTMLButtonElement;
 const nextBtn         = document.getElementById('next-btn') as HTMLButtonElement;
 const restartBtn      = document.getElementById('restart-btn') as HTMLButtonElement;
+const exitQuizBtn     = document.getElementById('exit-quiz-btn') as HTMLButtonElement;
 
 const welcomeScreen   = document.getElementById('welcome-screen') as HTMLElement;
 const quizScreen      = document.getElementById('quiz-screen') as HTMLElement;
@@ -639,6 +640,18 @@ nextBtn.addEventListener('click', () => {
 restartBtn.addEventListener('click', () => {
   answers.fill(null);
   autoAdvanceTimer = null;
+  currentIndex = 0;
+  showScreen(welcomeScreen);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Exit quiz — return to welcome screen without completing the quiz
+exitQuizBtn.addEventListener('click', () => {
+  if (autoAdvanceTimer !== null) {
+    clearTimeout(autoAdvanceTimer);
+    autoAdvanceTimer = null;
+  }
+  answers.fill(null);
   currentIndex = 0;
   showScreen(welcomeScreen);
   window.scrollTo({ top: 0, behavior: 'smooth' });
