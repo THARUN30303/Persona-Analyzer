@@ -1,16 +1,12 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compileOnSave": false,
   "files": [],
   "references": [
-    {
-      "path": "./lib/db"
-    },
-    {
-      "path": "./lib/api-client-react"
-    },
-    {
-      "path": "./lib/api-zod"
-    }
+    { "path": "lib/api-client-react" },
+    { "path": "lib/api-zod" },
+    { "path": "lib/db" },
+    { "path": "artifacts/api-server" },
+    { "path": "artifacts/personality-insight" },
+    { "path": "artifacts/mockup-sandbox" },
+    { "path": "scripts" }
   ]
 }

@@ -56,7 +56,7 @@ const questions: Question[] = [
     text: 'When facing an important decision, where does your process sit?',
     leftLabel: '❤️ Pure Gut Feeling',
     rightLabel: '📊 Pure Data & Facts',
-    sliderMap: (v) => {
+    sliderMap: (v): Record<string, number> => {
       if (v < 20) return { empath: 3, nurturer: 1 };
       if (v < 40) return { social: 2, creative: 2 };
       if (v < 60) return { calm: 2, visionary: 1 };
@@ -80,7 +80,7 @@ const questions: Question[] = [
     text: 'How comfortable are you with uncertainty and risk?',
     leftLabel: '🛡️ I avoid risk',
     rightLabel: '🎲 I embrace it',
-    sliderMap: (v) => {
+    sliderMap: (v): Record<string, number> => {
       if (v < 20) return { perfectionist: 2, logical: 2 };
       if (v < 40) return { calm: 2, logical: 1 };
       if (v < 60) return { visionary: 2, leader: 1 };
@@ -138,7 +138,7 @@ const questions: Question[] = [
     text: 'When you think about the future, where does your mind go?',
     leftLabel: '🕰️ I live in the present',
     rightLabel: '🚀 I dream of what\'s possible',
-    sliderMap: (v) => {
+    sliderMap: (v): Record<string, number> => {
       if (v < 20) return { calm: 3 };
       if (v < 40) return { social: 2, nurturer: 1 };
       if (v < 60) return { leader: 2, logical: 1 };
